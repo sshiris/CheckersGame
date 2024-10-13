@@ -85,7 +85,7 @@ class GameBoard
         return x.ToString() + y.ToString();
     }
 
-    public void MoveMethods(Player player, Player opponentPlayer, string startPosition, string endPosition)
+    public void MoveMethods(Player player, string startPosition, string endPosition)
     {
 
         int startPositionX = int.Parse(startPosition[0].ToString());
@@ -109,9 +109,8 @@ class GameBoard
         {
             board[startPositionX, startPositionY] = '-';
             board[endPositionX, endPositionY] = player.pieceSymbol;
-            board[midX, midY] = player.pieceSymbol;
-            opponentPlayer.RemoveCapturedPiece(new Piece(GetTheArrayPosition(midX, midY)));
-            //check if a piece has made to be a king
+            board[midX, midY] = '-';
+
         }
     }
 
@@ -173,7 +172,8 @@ class GameBoard
             {
                 if (piece.isKing)
                 {
-                    MoveMethods(player, opponentPlayer, startPosition, endPosition);
+                    MoveMethods(player, startPosition, endPosition);
+                    UpdatePiece(player, opponentPlayer, startPosition, endPosition);
 
                 }
                 else
@@ -182,7 +182,8 @@ class GameBoard
                     {
                         if (endPositionX > startPositionX)
                         {
-                            MoveMethods(player, opponentPlayer, startPosition, endPosition);
+                            MoveMethods(player, startPosition, endPosition);
+                            UpdatePiece(player, opponentPlayer, startPosition, endPosition);
                         }
                     }
 
@@ -190,7 +191,8 @@ class GameBoard
                     {
                         if (endPositionX < startPositionX)
                         {
-                            MoveMethods(player, opponentPlayer, startPosition, endPosition);
+                            MoveMethods(player, startPosition, endPosition);
+                            UpdatePiece(player, opponentPlayer, startPosition, endPosition);
                         }
                     }
                 }
@@ -198,6 +200,54 @@ class GameBoard
 
         }
     }
+
+    public void UpdatePiece(Player player, Player opponentPlayer, string startPosition, string endPosition)
+    {
+        int startPositionX = int.Parse(startPosition[0].ToString());
+        int startPositionY = int.Parse(startPosition[1].ToString());
+
+        int endPositionX = int.Parse(endPosition[0].ToString());
+        int endPositionY = int.Parse(endPosition[1].ToString());
+
+        foreach (Piece piece in player.playerPieces)
+        {
+            //move the piece to new position
+            if (piece.position == startPosition)
+            {
+                piece.position = endPosition;
+            }
+            //check if it is a jump
+            if (Math.Abs(startPositionX - endPositionX) == 2 && Math.Abs(startPositionY - endPositionY) == 2)
+            {
+                int capturedX = (startPositionX + endPositionX) / 2;
+                int capturedY = (startPositionY + endPositionY) / 2;
+                string capturedPosition = GetTheArrayPosition(capturedX, capturedY);
+
+                Piece? capturedPiece = player.playerPieces.FirstOrDefault(p => p.position == capturedPosition);
+                if (capturedPiece != null)
+                {
+                    opponentPlayer.RemoveCapturedPiece(capturedPiece);
+                }
+
+            }
+
+            //check for kings
+            if (piece.isKing == false && player.pieceSymbol == 'X' && endPositionX == 7)
+            {
+                piece.IsKing();
+                //player.pieceSymbol = 'V';
+            }
+            if (piece.isKing == false && player.pieceSymbol == 'O' && endPositionX == 0)
+            {
+                piece.IsKing();
+                //player.pieceSymbol = 'U';
+            }
+
+        }
+    }
+
+
+
 
 
 }

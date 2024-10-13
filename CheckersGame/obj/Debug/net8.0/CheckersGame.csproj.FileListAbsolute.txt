@@ -12,3 +12,4 @@
 /Users/iris/Desktop/C#/CheckersGame/CheckersGame/obj/Debug/net8.0/CheckersGame.pdb
 /Users/iris/Desktop/C#/CheckersGame/CheckersGame/obj/Debug/net8.0/CheckersGame.genruntimeconfig.cache
 /Users/iris/Desktop/C#/CheckersGame/CheckersGame/obj/Debug/net8.0/ref/CheckersGame.dll
+/Users/iris/Desktop/C#/CheckersGame/CheckersGame/obj/Debug/net8.0/CheckersGame.sourcelink.json
