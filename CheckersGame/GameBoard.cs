@@ -122,6 +122,8 @@ class GameBoard
         int endPositionX = int.Parse(endPosition[0].ToString());
         int endPositionY = int.Parse(endPosition[1].ToString());
 
+        Piece? startPiece = player.playerPieces.FirstOrDefault(p => p.position == startPosition);
+
         //check if the start and end position is within the board
         if (startPositionX < 0 || startPositionX >= SIZE || startPositionY < 0 || startPositionY >= SIZE
         || endPositionX < 0 || endPositionX >= SIZE || endPositionY < 0 || endPositionY >= SIZE)
@@ -130,7 +132,7 @@ class GameBoard
         }
 
         //check if the start position has the player's piece
-        if (board[startPositionX, startPositionY] != player.pieceSymbol)
+        if (startPiece == null)
         {
             return false;
         }
@@ -152,6 +154,20 @@ class GameBoard
                 return false;
             }
         }
+
+        // Regular piece movement rules (forward only)
+
+        if (startPiece != null && !startPiece.isKing)
+        {
+            if (player.pieceSymbol == 'X' && endPositionX <= startPositionX) // X can only move down
+            {
+                return false;
+            }
+            if (player.pieceSymbol == 'O' && endPositionX >= startPositionX) // O can only move up
+            {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -167,37 +183,10 @@ class GameBoard
 
         if (isValidMove)
         {
-            //check if the piece you are moving is King first
-            foreach (Piece piece in player.playerPieces)
-            {
-                if (piece.isKing)
-                {
-                    MoveMethods(player, startPosition, endPosition);
-                    UpdatePiece(player, opponentPlayer, startPosition, endPosition);
-
-                }
-                else
-                {
-                    if (player.pieceSymbol == 'X')
-                    {
-                        if (endPositionX > startPositionX)
-                        {
-                            MoveMethods(player, startPosition, endPosition);
-                            UpdatePiece(player, opponentPlayer, startPosition, endPosition);
-                        }
-                    }
-
-                    if (player.pieceSymbol == 'O')
-                    {
-                        if (endPositionX < startPositionX)
-                        {
-                            MoveMethods(player, startPosition, endPosition);
-                            UpdatePiece(player, opponentPlayer, startPosition, endPosition);
-                        }
-                    }
-                }
-            }
-
+            MoveMethods(player, startPosition, endPosition);
+            UpdatePiece(player, opponentPlayer, startPosition, endPosition);
+            KingMove(player, startPosition, endPosition);
+            IsGameOver(player);
         }
     }
 
@@ -209,45 +198,107 @@ class GameBoard
         int endPositionX = int.Parse(endPosition[0].ToString());
         int endPositionY = int.Parse(endPosition[1].ToString());
 
-        foreach (Piece piece in player.playerPieces)
+        Piece? startPiece = player.playerPieces.FirstOrDefault(p => p.position == startPosition);
+        startPiece.position = endPosition;
+
+        //if it is a jump, remove the captured piece from the opponent's pieces
+        if (Math.Abs(startPositionX - endPositionX) == 2 && Math.Abs(startPositionY - endPositionY) == 2)
         {
-            //move the piece to new position
-            if (piece.position == startPosition)
-            {
-                piece.position = endPosition;
-            }
-            //check if it is a jump
-            if (Math.Abs(startPositionX - endPositionX) == 2 && Math.Abs(startPositionY - endPositionY) == 2)
-            {
-                int capturedX = (startPositionX + endPositionX) / 2;
-                int capturedY = (startPositionY + endPositionY) / 2;
-                string capturedPosition = GetTheArrayPosition(capturedX, capturedY);
+            int capturedX = (startPositionX + endPositionX) / 2;
+            int capturedY = (startPositionY + endPositionY) / 2;
+            string capturedPosition = GetTheArrayPosition(capturedX, capturedY);
 
-                Piece? capturedPiece = player.playerPieces.FirstOrDefault(p => p.position == capturedPosition);
-                if (capturedPiece != null)
-                {
-                    opponentPlayer.RemoveCapturedPiece(capturedPiece);
-                }
-
-            }
-
-            //check for kings
-            if (piece.isKing == false && player.pieceSymbol == 'X' && endPositionX == 7)
+            Piece? capturedPiece = opponentPlayer.playerPieces.FirstOrDefault(p => p.position == capturedPosition);
+            if (capturedPiece != null)
             {
-                piece.IsKing();
-                //player.pieceSymbol = 'V';
-            }
-            if (piece.isKing == false && player.pieceSymbol == 'O' && endPositionX == 0)
-            {
-                piece.IsKing();
-                //player.pieceSymbol = 'U';
+                opponentPlayer.RemoveCapturedPiece(capturedPiece);
             }
 
         }
+
+        Piece? endPiece = player.playerPieces.FirstOrDefault(p => p.position == endPosition);
+        //check if the piece has become a king
+        if (endPiece.isKing == false && player.pieceSymbol == 'X' && endPositionX == 7)
+        {
+            endPiece.IsKing();
+            board[endPositionX, endPositionY] = 'V';
+
+        }
+        if (endPiece.isKing == false && player.pieceSymbol == 'O' && endPositionX == 0)
+        {
+            endPiece.IsKing();
+            board[endPositionX, endPositionY] = 'U';
+        }
     }
 
+    public void KingMove(Player player, string startPosition, string endPosition)
+    {
+        int startPositionX = int.Parse(startPosition[0].ToString());
+        int startPositionY = int.Parse(startPosition[1].ToString());
 
+        int endPositionX = int.Parse(endPosition[0].ToString());
+        int endPositionY = int.Parse(endPosition[1].ToString());
 
+        Piece? endPiece = player.playerPieces.FirstOrDefault(p => p.position == endPosition);
 
+        if (endPiece != null)
+        {
+            if (endPiece.isKing)
+            {
+                if (player.pieceSymbol == 'X')
+                {
+                    board[endPositionX, endPositionY] = 'V';
+                }
+                if (player.pieceSymbol == 'O')
+                {
+                    board[endPositionX, endPositionY] = 'U';
+                }
+
+            }
+        }
+
+    }
+
+    public bool HasValidMoves(Player player)
+    {
+        foreach (Piece piece in player.playerPieces)
+        {
+            string position = piece.position;
+            int startX = int.Parse(position[0].ToString());
+            int startY = int.Parse(position[1].ToString());
+
+            //check possible moves
+            int[] dx = { 1, -1, 1, -1, 2, -2, 2, -2 };
+            int[] dy = { 1, 1, -1, -1, 2, 2, -2, -2 };
+
+            for (int i = 0; i < dx.Length; i++)
+            {
+                int newX = startX + dx[i];
+                int newY = startY + dy[i];
+                if (newX >= 0 && newX < SIZE && newY >= 0 && newY < SIZE)
+                {
+                    string newPosition = GetTheArrayPosition(newX, newY);
+                    if (IsValidMove(player, position, newPosition))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public bool IsGameOver(Player player)
+    {
+        if (player.playerPieces.Count == 0)
+        {
+            return true;
+        }
+        if (!HasValidMoves(player))
+        {
+            return true;
+        }
+        return false;
+    }
 
 }
