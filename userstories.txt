@@ -1,0 +1,23 @@
+User Stories:
+1.Get Game Started
+As a player, I want to see an 8x8 checkers board with alternating dark and light squares printed on the console.
+The board should display row and column coordinates (e.g., A1, H8) for players to reference during the game.
+2.	Set Two Players
+As a player, I want two players (Player 1 and Player 2) to take turns playing their pieces on the board.
+Each player should be assigned pieces of different shape.
+3.	Move Pieces
+As a player, I want to specify my move by entering the starting and ending positions of the piece (e.g., A1 to C3).
+Players can only move diagonally, and only if the destination square is empty.
+A piece can only move one step diagonally, except when jumping over an opponent's piece.
+4.	Capturing Opponent's Piece
+As a player, I want to jump over my opponent’s piece if it is adjacent to mine in a diagonal position, landing on an empty diagonal square.
+The jumped piece should be removed from the board ("captured").
+5.	Promotion to King
+As a player, I want my piece to be promoted to a "King" when it reaches the opponent’s back row.
+Kings should be able to move both forwards and backwards diagonally.
+6.	Winning Condition
+As a player, I want to win the game by capturing all of my opponent's pieces.
+I also want to win if I block all possible moves of my opponent.
+7.	Game Over
+As a player, I want to see an alert on the console when the game is over, declaring the winner.
+I should have the option to restart the game after a winner is declared.
