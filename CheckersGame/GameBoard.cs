@@ -122,7 +122,7 @@ class GameBoard
         int endPositionX = int.Parse(endPosition[0].ToString());
         int endPositionY = int.Parse(endPosition[1].ToString());
 
-        Piece? startPiece = player.playerPieces.FirstOrDefault(p => p.position == startPosition);
+        Piece startPiece = player.playerPieces.FirstOrDefault(p => p.position == startPosition);
 
         //check if the start and end position is within the board
         if (startPositionX < 0 || startPositionX >= SIZE || startPositionY < 0 || startPositionY >= SIZE
@@ -198,7 +198,7 @@ class GameBoard
         int endPositionX = int.Parse(endPosition[0].ToString());
         int endPositionY = int.Parse(endPosition[1].ToString());
 
-        Piece? startPiece = player.playerPieces.FirstOrDefault(p => p.position == startPosition);
+        Piece startPiece = player.playerPieces.FirstOrDefault(p => p.position == startPosition);
         startPiece.position = endPosition;
 
         //if it is a jump, remove the captured piece from the opponent's pieces
@@ -208,7 +208,7 @@ class GameBoard
             int capturedY = (startPositionY + endPositionY) / 2;
             string capturedPosition = GetTheArrayPosition(capturedX, capturedY);
 
-            Piece? capturedPiece = opponentPlayer.playerPieces.FirstOrDefault(p => p.position == capturedPosition);
+            Piece capturedPiece = opponentPlayer.playerPieces.FirstOrDefault(p => p.position == capturedPosition);
             if (capturedPiece != null)
             {
                 opponentPlayer.RemoveCapturedPiece(capturedPiece);
@@ -216,7 +216,7 @@ class GameBoard
 
         }
 
-        Piece? endPiece = player.playerPieces.FirstOrDefault(p => p.position == endPosition);
+        Piece endPiece = player.playerPieces.FirstOrDefault(p => p.position == endPosition);
         //check if the piece has become a king
         if (endPiece.isKing == false && player.pieceSymbol == 'X' && endPositionX == 7)
         {
@@ -239,7 +239,7 @@ class GameBoard
         int endPositionX = int.Parse(endPosition[0].ToString());
         int endPositionY = int.Parse(endPosition[1].ToString());
 
-        Piece? endPiece = player.playerPieces.FirstOrDefault(p => p.position == endPosition);
+        Piece endPiece = player.playerPieces.FirstOrDefault(p => p.position == endPosition);
 
         if (endPiece != null)
         {

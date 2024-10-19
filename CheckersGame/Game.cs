@@ -28,13 +28,7 @@ class Game
 
         while (true)
         {
-            Console.WriteLine($"{currentPlayer.name}'s turn({currentPlayer.pieceSymbol}), enter position(row coloum) eg: 00, 01");
-            Console.Write("start position: ");
-            startPosition = Console.ReadLine();
-            Console.Write("end position: ");
-            endPosition = Console.ReadLine();
-            board.MovePiece(currentPlayer, GetOpponent(), startPosition, endPosition);
-
+            HandleMove();
             board.PrintGameBoard();
             SwitchPlayer();
         }
@@ -50,6 +44,43 @@ class Game
     private Player GetOpponent()
     {
         return (currentPlayer == player1 ? player2 : player1);
+    }
+
+    public void HandleMove()
+    {
+        Console.WriteLine($"{currentPlayer.name}'s turn({currentPlayer.pieceSymbol}), enter position(row coloum) eg: 00, 01");
+        Console.Write("start position: ");
+        startPosition = Console.ReadLine();
+        Console.Write("end position: ");
+        endPosition = Console.ReadLine();
+
+
+        bool isValidInput = IsValidInput(startPosition, endPosition);
+        while (!isValidInput)
+        {
+            Console.WriteLine("Invalid move, try again.");
+
+            Console.WriteLine($"{currentPlayer.name}'s turn({currentPlayer.pieceSymbol}), enter position(row coloum) eg: 00, 01");
+            Console.Write("start position: ");
+            startPosition = Console.ReadLine();
+            Console.Write("end position: ");
+            endPosition = Console.ReadLine();
+
+            isValidInput = IsValidInput(startPosition, endPosition);
+        }
+
+        board.MovePiece(currentPlayer, GetOpponent(), startPosition, endPosition);
+    }
+    public bool IsValidInput(string startPosition, string endPosition)
+    {
+
+        if (board.IsValidMove(currentPlayer, startPosition, endPosition))
+        {
+            return true;
+
+        }
+
+        return false;
     }
 
 }
